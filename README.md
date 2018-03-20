@@ -1,7 +1,7 @@
 GRXE AceProc
 
-    Python Concurrent Process Objects with Integrated Message Passing
-
+    Concurrent Message-Aware Python Process Library
+    
         AceProc incorporates multi-processing natives with extensible
         message	passing. The library includes an inheritable concurrent
         object able to send and receive messages - AceProc
