@@ -8,8 +8,8 @@ GRXE AceProc
 	    Additionally, the library provides an inheritable object to pass
 	    data between other AceProc objects - AceProcDataMsg
 
-	    To use AceProc, import the AceProc object & the AceProcDataMsg object:
 
+To use AceProc, import the AceProc object & the AceProcDataMsg object:
 
 from aceproc.aceproc import AceProc, AceProcDataMsg
 
