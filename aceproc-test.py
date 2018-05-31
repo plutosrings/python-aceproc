@@ -49,15 +49,15 @@ def main():
         aceprocs.append(MyParallelObject("AceProcs %s" % i))
 
     # Send your data between the various Memothreads
-    aceprocs[0].sendMsg(aceprocs[1], MyParallelData("01"))
-    aceprocs[2].sendMsg(aceprocs[3], MyParallelData("02"))
-    aceprocs[4].sendMsg(aceprocs[5], MyParallelData("03"))
+    aceprocs[0].sendMsg(aceprocs[1], MyParallelData("Message from 00 to 01"))
+    aceprocs[2].sendMsg(aceprocs[3], MyParallelData("Message from 02 to 03"))
+    aceprocs[4].sendMsg(aceprocs[5], MyParallelData("Message from 04 to 05"))
 
     # To Stop your concurrent object, simply call .stop()
     print("Stopping AceProcs")
     for i in range(0, 10):
         print("stopping %s" % i)
-        aceprocs[i].stop()
+        #aceprocs[i].stop()
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ from .grxe_common import GrxeObject
 '''
 class AceProc(GrxeObject):
 
-    msgbox = Queue()
+    #msgbox = Queue()
 
     def schedule(self, schedule, msg=None):
         # need to make this a thread protected variable
@@ -32,7 +32,16 @@ class AceProc(GrxeObject):
     def process_schedule(self, msg):
         self.say("Generic Scheduled Message Processing")
 
+    #    def __unicode__(self):
+    #         return self.name
+
+    def __str__(self):
+        return self.name
+
     def __init__(self, name, schedule=None, concurrent=True, wait=False):
+
+        self.msgbox = Queue()
+
         self.name       = name
         self.alive      = True
         self.enabled    = True
@@ -60,7 +69,9 @@ class AceProc(GrxeObject):
         assert isinstance(to, AceProc)
         assert isinstance(msg, AceProcMsg)
 
-        to.recvMsg(msg)
+        #to.recvMsg(msg)
+        print("Sending to: %s" % to)
+        to.msgbox.put(msg)
 
     def stop(self):
         self.sendMsg(self, AceProcCtrlMsgStop())
