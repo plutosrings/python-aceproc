@@ -11,7 +11,6 @@ from .grxe_common import GrxeObject
 '''
 class AceProc(GrxeObject):
 
-    #msgbox = Queue()
 
     def schedule(self, schedule, msg=None):
         # need to make this a thread protected variable
@@ -45,19 +44,25 @@ class AceProc(GrxeObject):
         self.name       = name
         self.alive      = True
         self.enabled    = True
+        self.concurrent = concurrent
+        self.wait       = wait
 
-        if concurrent:
+    def launch(self):
+
+        if self.concurrent:
             self.debug(self.name, "Creating New AceProc")
 
             self.thread = Process(target=self.exec)
 
-            if not wait:
+            if not self.wait:
                 self.thread.start()
 
         else:
             # Consume the main thread, still process messages
             self.exec()
 
+    def coinit(self):
+        print("Default co-initialization function")
 
     def recvMsg(self, msg):
         assert isinstance(msg, AceProcMsg)
@@ -85,6 +90,8 @@ class AceProc(GrxeObject):
     def exec(self):
         self.debug(self.name, "Starting Exec")
 
+        self.coinit()
+
         while self.alive:
             self.debug(self.name, "Waiting for Msg")
             msg = self.msgbox.get(block=True)
@@ -93,6 +100,10 @@ class AceProc(GrxeObject):
             if self.enabled and isinstance(msg, AceProcDataMsg):
                 self.debug(self.name, "Got a User-Data Msg: %s" % msg)
                 self.process(msg)
+
+                #if result and isinstance(result, AceProcDataMsg):
+                #self.sendMsg(result.sendto, result)
+                #   pass
 
             elif isinstance(msg, AceProcCtrlMsg):
                 self.debug(self.name, "Got a Control Msg: %s" % msg)
@@ -144,9 +155,11 @@ class AceProc(GrxeObject):
 '''
 
 
-class AceProcMsg():
+class AceProcMsg(GrxeObject):
     def __init__(self, desc="Default Description for Base AceProcMsg"):
         self.desc = desc
+
+
 
     def __str__(self):
         return "AceThreadMsg: %s" % self.desc
@@ -157,10 +170,13 @@ class AceProcMsg():
         Base class for User-Specified Data Messages
 '''
 class AceProcDataMsg(AceProcMsg):
-    def __init__(self, desc):
+    def __init__(self, desc, send_to_aceproc=None):
         super(AceProcDataMsg, self).__init__(desc)
-
-
+        print(send_to_aceproc)
+        if send_to_aceproc:
+            assert(send_to_aceproc, AceProc)
+            self.__send_to_aceproc = send_to_aceproc
+            pass
 '''
     Class: AceProcScheduleMsg:
         Base class for User-Specified Schedule Messages
@@ -203,3 +219,12 @@ class AceProcCtrlMsgResume(AceProcCtrlMsg):
 class AceProcCtrlMsgDump(AceProcCtrlMsg):
     def __init__(self):
         super(AceProcCtrlMsgResume, self).__init__("Ctrl: DUMP")
+
+
+class AceProcCtrlMsgProcessFailed():
+    """
+        AceProcCtrlMsgProcessFailed
+            Produced when a data message passed into the process() function failed for some reason
+    """
+    def __init__(self):
+        super(AceProcCtrlMsgProcessFailed, self).__init__("Ctrl: DUMP")
